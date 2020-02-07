@@ -1,0 +1,53 @@
+
+https://docs.bugsnag.com/platforms/java/spring/
+
+Unhandled Exceptions are automatically thrown by Bugsnag
+
+1)Add the dependency in pom.xml
+	<dependency>
+		<groupId>com.bugsnag</groupId>
+		<version>[3.0,4.0)</version>
+		<artifactId>bugsnag-spring</artifactId>
+	</dependency>
+	
+2)Create a Configuration class for Bugsnag
+
+	import org.springframework.context.annotation.Bean;
+	import org.springframework.context.annotation.Configuration;
+	import org.springframework.context.annotation.Import;
+	import com.bugsnag.BugsnagSpringConfiguration;
+	import com.bugsnag.Bugsnag;
+
+	@Configuration
+	@Import(BugsnagSpringConfiguration.class)
+	public class BugsnagConfig {
+		@Bean
+		public Bugsnag bugsnag() {
+			return new Bugsnag("BUGSNAG-API-KEY");
+		}
+	}
+	
+3)Inject the Bugsnag bean in our Controller and use it
+
+    @Autowired
+    private Bugsnag bugsnag;
+		
+4)Write a Scheduler method which is executed every 10 seconds and throws Unhandled Exception
+  Unhandled Exceptions are automatically thrown by Bugsnag     
+  We don't need to use bugsnag.notify(new Exception("Hello Bugsnag")) explicitly
+  
+	@Scheduled(fixedRate = 10000)
+	public void printLOg() throws Exception {
+	   System.out.println("Current time is :: " + Calendar.getInstance().getTime());
+	   throw new Exception("Unhandled Exception");
+	}
+	
+5)Build, Deploy the application and test it
+
+	mvn clean install
+
+	mvn spring-boot:run
+
+	http://localhost:8080/
+	
+5)Go to Bugsnag Dashboard and check our Unhandled Exception messages
